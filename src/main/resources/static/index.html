@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevPulse - Developer Productivity Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #38bdf8;
+      --primary-hover: #0ea5e9;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .logo-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #38bdf8, #6366f1);
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .tagline {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .health-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background-color: #064e3b;
+      color: #6ee7b7;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 500;
+      border: 1px solid #047857;
+    }
+
+    .health-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #10b981;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: #0f172a;
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--card-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+    }
+
+    .btn-secondary:hover {
+      background-color: #334155;
+      color: #fff;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-title {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 8px;
+      color: #fff;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .filter-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-input {
+      background-color: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 13px;
+      outline: none;
+    }
+
+    .filter-input:focus {
+      border-color: var(--primary);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+      font-size: 14px;
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .badge-progress {
+      background-color: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    .badge-completed {
+      background-color: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-planned {
+      background-color: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-action {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-action:hover {
+      color: #fff;
+      background-color: #334155;
+    }
+
+    .btn-danger:hover {
+      color: #fca5a5;
+      background-color: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Modal Form */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 28px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background-color: #0f172a;
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      padding: 10px 14px;
+      font-size: 14px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .quick-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .link-chip {
+      background-color: rgba(51, 65, 85, 0.4);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      text-decoration: none;
+      border: 1px solid var(--card-border);
+      transition: all 0.2s;
+    }
+
+    .link-chip:hover {
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    #notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #fff;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      z-index: 2000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo-group">
+        <div class="logo-badge">⚡</div>
+        <div>
+          <h1>DevPulse Dashboard</h1>
+          <div class="tagline">Developer Productivity & Project Performance System</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div id="health-status" class="health-pill">
+          <span class="health-dot"></span>
+          <span id="health-text">Checking API...</span>
+        </div>
+        <button class="btn" onclick="openCreateModal()">+ New Project</button>
+      </div>
+    </header>
+
+    <!-- Metrics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-title">Total Projects</div>
+        <div class="stat-value" id="stat-total">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">In Progress</div>
+        <div class="stat-value" style="color: #38bdf8;" id="stat-in-progress">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Completed</div>
+        <div class="stat-value" style="color: #34d399;" id="stat-completed">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-title">Planned</div>
+        <div class="stat-value" style="color: #fbbf24;" id="stat-planned">0</div>
+      </div>
+    </div>
+
+    <!-- Main Projects Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Projects Directory</div>
+        <div class="filter-group">
+          <input type="text" id="searchInput" class="filter-input" placeholder="Search projects..." oninput="filterProjects()">
+          <select id="statusFilter" class="filter-input" onchange="filterProjects()">
+            <option value="ALL">All Statuses</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Planned">Planned</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="projectsTableBody">
+            <tr><td colspan="5" style="text-align: center; color: var(--text-muted);">Loading projects...</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="quick-links">
+        <span style="font-size: 12px; color: var(--text-muted); align-self: center;">Quick Dev APIs:</span>
+        <a class="link-chip" href="/api/health" target="_blank">GET /api/health</a>
+        <a class="link-chip" href="/api/projects" target="_blank">GET /api/projects</a>
+        <a class="link-chip" href="/h2-console" target="_blank">H2 Database Console</a>
+        <a class="link-chip" href="/actuator" target="_blank">Actuator Metrics</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create/Edit Modal -->
+  <div id="projectModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Create New Project</h3>
+        <button class="btn-action" onclick="closeModal()">✕</button>
+      </div>
+      <form id="projectForm" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" id="projectId">
+        <div class="form-group">
+          <label for="projectName">Project Name *</label>
+          <input type="text" id="projectName" required minlength="2" maxlength="100" placeholder="e.g. Authentication Service">
+        </div>
+        <div class="form-group">
+          <label for="projectDesc">Description</label>
+          <textarea id="projectDesc" rows="3" placeholder="Brief project summary..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="projectStatus">Status *</label>
+          <select id="projectStatus" required>
+            <option value="Planned">Planned</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button type="submit" class="btn" id="saveButton">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Notification Toast -->
+  <div id="notification"></div>
+
+  <script>
+    let projects = [];
+
+    async function checkHealth() {
+      try {
+        const res = await fetch('/api/health');
+        if (res.ok) {
+          const text = await res.text();
+          document.getElementById('health-text').innerText = text;
+        } else {
+          document.getElementById('health-text').innerText = 'Health Check Warning';
+        }
+      } catch (e) {
+        document.getElementById('health-text').innerText = 'Backend Offline';
+      }
+    }
+
+    async function fetchProjects() {
+      try {
+        const res = await fetch('/api/projects');
+        if (res.ok) {
+          projects = await res.json();
+          renderStats();
+          filterProjects();
+        } else {
+          showNotification('Failed to fetch projects', true);
+        }
+      } catch (e) {
+        showNotification('Error loading projects: ' + e.message, true);
+      }
+    }
+
+    function renderStats() {
+      document.getElementById('stat-total').innerText = projects.length;
+      document.getElementById('stat-in-progress').innerText = projects.filter(p => p.status === 'In Progress').length;
+      document.getElementById('stat-completed').innerText = projects.filter(p => p.status === 'Completed').length;
+      document.getElementById('stat-planned').innerText = projects.filter(p => p.status === 'Planned').length;
+    }
+
+    function getBadgeClass(status) {
+      if (status === 'Completed') return 'badge-completed';
+      if (status === 'In Progress') return 'badge-progress';
+      return 'badge-planned';
+    }
+
+    function filterProjects() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value;
+
+      const filtered = projects.filter(p => {
+        const matchesQuery = p.name.toLowerCase().includes(query) || (p.description && p.description.toLowerCase().includes(query));
+        const matchesStatus = statusFilter === 'ALL' || p.status === statusFilter;
+        return matchesQuery && matchesStatus;
+      });
+
+      const tbody = document.getElementById('projectsTableBody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted); padding: 24px;">No projects found.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(p => `
+        <tr>
+          <td><span style="color: var(--text-muted); font-size: 13px;">#${p.id}</span></td>
+          <td><strong>${escapeHtml(p.name)}</strong></td>
+          <td style="color: var(--text-muted); max-width: 300px;">${escapeHtml(p.description || '—')}</td>
+          <td><span class="badge ${getBadgeClass(p.status)}">${escapeHtml(p.status)}</span></td>
+          <td>
+            <div class="actions-cell">
+              <button class="btn-action" onclick="openEditModal(${p.id})">Edit</button>
+              <button class="btn-action btn-danger" onclick="deleteProject(${p.id})">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return str ? String(str).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m])) : '';
+    }
+
+    function openCreateModal() {
+      document.getElementById('modalTitle').innerText = 'Create New Project';
+      document.getElementById('projectId').value = '';
+      document.getElementById('projectName').value = '';
+      document.getElementById('projectDesc').value = '';
+      document.getElementById('projectStatus').value = 'Planned';
+      document.getElementById('projectModal').classList.add('active');
+    }
+
+    function openEditModal(id) {
+      const p = projects.find(item => item.id === id);
+      if (!p) return;
+      document.getElementById('modalTitle').innerText = 'Edit Project';
+      document.getElementById('projectId').value = p.id;
+      document.getElementById('projectName').value = p.name;
+      document.getElementById('projectDesc').value = p.description || '';
+      document.getElementById('projectStatus').value = p.status;
+      document.getElementById('projectModal').classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('projectModal').classList.remove('active');
+    }
+
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById('projectId').value;
+      const payload = {
+        name: document.getElementById('projectName').value.trim(),
+        description: document.getElementById('projectDesc').value.trim(),
+        status: document.getElementById('projectStatus').value
+      };
+
+      const isEdit = !!id;
+      const url = isEdit ? `/api/projects/${id}` : '/api/projects';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          showNotification(isEdit ? 'Project updated successfully!' : 'Project created successfully!');
+          closeModal();
+          fetchProjects();
+        } else {
+          const err = await res.json();
+          showNotification(err.message || 'Operation failed', true);
+        }
+      } catch (err) {
+        showNotification('Network error: ' + err.message, true);
+      }
+    }
+
+    async function deleteProject(id) {
+      if (!confirm('Are you sure you want to delete this project?')) return;
+      try {
+        const res = await fetch(`/api/projects/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          showNotification('Project deleted');
+          fetchProjects();
+        } else {
+          showNotification('Failed to delete project', true);
+        }
+      } catch (err) {
+        showNotification('Error deleting project', true);
+      }
+    }
+
+    function showNotification(msg, isError = false) {
+      const toast = document.getElementById('notification');
+      toast.innerText = msg;
+      toast.style.backgroundColor = isError ? '#ef4444' : '#10b981';
+      toast.style.display = 'block';
+      setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+
+    // Initial load
+    checkHealth();
+    fetchProjects();
+  </script>
+</body>
+</html>
